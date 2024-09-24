@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### .github ###
+.github
+
+### application.properties ###
+src/main/resources/application.properties
