@@ -20,7 +20,7 @@ public class PlayHistoryService {
   }
 
   // 1. 특정 유저의 재생 기록 저장
-  public void savePlayHistory(String userId, String musicId, String title, String artist) {
+  public PlayHistory savePlayHistory(String userId, String musicId, String title, String artist) {
     PlayHistory playHistory = new PlayHistory(
         UUID.randomUUID().toString(), // 재생 기록 고유 ID 생성
         userId,
@@ -30,6 +30,8 @@ public class PlayHistoryService {
         new Date() // 현재 시간 저장
     );
     playHistoryRepository.save(playHistory);
+
+    return playHistory;
   }
 
   // 2. 특정 유저의 최근 재생 기록 상위 5개 조회
