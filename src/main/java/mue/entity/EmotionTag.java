@@ -1,11 +1,11 @@
 package mue.entity;
 
 import jakarta.persistence.*;
-import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "emotion_tag")
-public class EmotionTag implements Serializable {
+public class EmotionTag {
 
   @Id
   @Column(name = "emotion_tag_id", nullable = false, unique = true)
@@ -14,22 +14,23 @@ public class EmotionTag implements Serializable {
   @Column(name = "emotion_tag", nullable = false)
   private String emotionTag;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false) // FK로 User 테이블의 userId 참조
-  private User user;
+  @Column(name = "user_id", nullable = false)
+  private String userId;
+
+  @OneToMany(mappedBy = "emotionTag", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<EmotionLog> emotionLogs;
 
   // 기본 생성자
   public EmotionTag() {
   }
 
-  // 생성자 (필요에 따라 추가)
-  public EmotionTag(String emotionTagId, String emotionTag, User user) {
+  public EmotionTag(String emotionTagId, String emotionTag, String userId, List<EmotionLog> emotionLogs) {
     this.emotionTagId = emotionTagId;
     this.emotionTag = emotionTag;
-    this.user = user;
+    this.userId = userId;
+    this.emotionLogs = emotionLogs;
   }
 
-  // Getter, Setter
   public String getEmotionTagId() {
     return emotionTagId;
   }
@@ -46,11 +47,19 @@ public class EmotionTag implements Serializable {
     this.emotionTag = emotionTag;
   }
 
-  public User getUser() {
-    return user;
+  public String getUserId() {
+    return userId;
   }
 
-  public void setUser(User user) {
-    this.user = user;
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public List<EmotionLog> getEmotionLogs() {
+    return emotionLogs;
+  }
+
+  public void setEmotionLogs(List<EmotionLog> emotionLogs) {
+    this.emotionLogs = emotionLogs;
   }
 }
