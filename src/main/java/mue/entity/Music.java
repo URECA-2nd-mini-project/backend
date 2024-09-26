@@ -1,24 +1,25 @@
 package mue.entity;
 
 import jakarta.persistence.*;
-import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "music")
-public class Music implements Serializable {
+public class Music {
 
   @Id
   @Column(name = "music_id", nullable = false, unique = true)
   private String musicId;
 
-  @Column(name = "name", nullable = false)
-  private String name;
+  @Column(name = "title", nullable = false)
+  private String title;
 
-  @Column(name = "singer", nullable = false)
-  private String singer;
+  @Column(name = "artist", nullable = false)
+  private String artist;
 
-  @Column(name = "length", nullable = false)
-  private int length;
+  @Column(name = "duration", nullable = false)
+  private int duration;
 
   @Column(name = "thumbnail")
   private String thumbnail;
@@ -26,27 +27,34 @@ public class Music implements Serializable {
   @Column(name = "lyrics", columnDefinition = "TEXT")
   private String lyrics;
 
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "played_at")
+  private Date playedAt;
+
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "playlist_id", nullable = false) // FK로 Playlist 테이블의 playlistId 참조
+  @JoinColumn(name = "playlist_id") // FK로 Playlist 테이블의 playlistId 참조
   private Playlist playlist;
+
+  @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<EmotionLog> emotionLogs;
 
   // 기본 생성자
   public Music() {
   }
 
-  // 생성자 (필요에 따라 추가)
-  public Music(String musicId, String name, String singer, int length, String thumbnail, String lyrics,
-      Playlist playlist) {
+  public Music(String musicId, String title, String artist, int duration, String thumbnail, String lyrics,
+      Date playedAt, Playlist playlist, List<EmotionLog> emotionLogs) {
     this.musicId = musicId;
-    this.name = name;
-    this.singer = singer;
-    this.length = length;
+    this.title = title;
+    this.artist = artist;
+    this.duration = duration;
     this.thumbnail = thumbnail;
     this.lyrics = lyrics;
+    this.playedAt = playedAt;
     this.playlist = playlist;
+    this.emotionLogs = emotionLogs;
   }
 
-  // Getter, Setter
   public String getMusicId() {
     return musicId;
   }
@@ -55,28 +63,28 @@ public class Music implements Serializable {
     this.musicId = musicId;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
-  public String getSinger() {
-    return singer;
+  public String getArtist() {
+    return artist;
   }
 
-  public void setSinger(String singer) {
-    this.singer = singer;
+  public void setArtist(String artist) {
+    this.artist = artist;
   }
 
-  public int getLength() {
-    return length;
+  public int getDuration() {
+    return duration;
   }
 
-  public void setLength(int length) {
-    this.length = length;
+  public void setDuration(int duration) {
+    this.duration = duration;
   }
 
   public String getThumbnail() {
@@ -95,6 +103,14 @@ public class Music implements Serializable {
     this.lyrics = lyrics;
   }
 
+  public Date getPlayedAt() {
+    return playedAt;
+  }
+
+  public void setPlayedAt(Date playedAt) {
+    this.playedAt = playedAt;
+  }
+
   public Playlist getPlaylist() {
     return playlist;
   }
@@ -102,4 +118,14 @@ public class Music implements Serializable {
   public void setPlaylist(Playlist playlist) {
     this.playlist = playlist;
   }
+
+  public List<EmotionLog> getEmotionLogs() {
+    return emotionLogs;
+  }
+
+  public void setEmotionLogs(List<EmotionLog> emotionLogs) {
+    this.emotionLogs = emotionLogs;
+  }
+
+  // 필요한 필드를 포함한 생성자 및 Getter, Setter 생략
 }
