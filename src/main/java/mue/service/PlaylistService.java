@@ -1,33 +1,79 @@
 package mue.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 
 import mue.entity.Playlist;
 import mue.repository.PlaylistRepository;
 
 @Service
 public class PlaylistService {
-    
+
     @Autowired     
-    private PlaylistRepository playlistRepository;
+    private PlaylistRepository playlistRepository; 
 
     // 사용자 ID로 모든 플레이리스트 찾기
     public List<Playlist> getAllPlaylistsByUserId(String userId) {
-        return playlistRepository.findByUserId(userId);
+    // 사용자 ID에 따른 플레이리스트 목록 반환
+        return playlistRepository.findByUserId(userId); 
     }
 
     // 플레이리스트 ID로 플레이리스트 세부정보 찾기
     public Optional<Playlist> getPlaylistById(String playlistId) {
-        return playlistRepository.findByPlaylistId(playlistId);
+    // 플레이리스트 ID로 세부정보 반환
+        return playlistRepository.findByPlaylistId(playlistId); 
     }
 
     // 특정 감정 태그를 가진 플레이리스트를 찾는 메소드
     public List<Playlist> getPlaylistsByUserIdAndEmotionTag(String userId, String emotionTag) {
-        return playlistRepository.findByUserIdAndEmotionTag(userId, emotionTag);
+    // 감정 태그에 따른 플레이리스트 반환
+        return playlistRepository.findByUserIdAndEmotionTag(userId, emotionTag); 
+    }
+
+    // 플레이리스트 생성
+    public Playlist createPlaylist(Playlist playlist) {
+    // 새 플레이리스트 저장
+        return playlistRepository.save(playlist); 
+    }
+
+    // 플레이리스트 수정
+    public Playlist updatePlaylist(String playlistId, Playlist updatedPlaylist) {
+        // 플레이리스트를 찾아서 수정하고 없으면 예외 처리
+        Playlist existingPlaylist = playlistRepository.findByPlaylistId(playlistId)
+                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+        // 수정하기
+        existingPlaylist.setName(updatedPlaylist.getName()); // 플레이리스트 이름 수정
+        existingPlaylist.setContents(updatedPlaylist.getContents()); // 플레이리스트 설명 수정
+        return playlistRepository.save(existingPlaylist); // 수정된 플레이리스트 저장
+    }
+
+    // 이미지 저장 메소드 {/*이미지 로컬 저장법 수정 필요*/}
+    public String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "path/to/upload/directory"; // 서버에 저장할 경로
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename(); // 중복 방지 파일명 생성
+            File file = new File(uploadDir, fileName); // 파일 객체 생성
+            image.transferTo(file); // 유저 이미지 저장 
+            
+            return "/uploads/" + fileName; // 저장된 파일의 URL 반환
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image: " + e.getMessage()); // 예외 처리
+        }
+    }
+
+    // 플레이리스트 삭제
+    public ResponseEntity<Void> deletePlaylist(String playlistId) {
+        // 플레이리스트를 찾아서 없으면 예외 처리
+        Playlist playlist = playlistRepository.findByPlaylistId(playlistId)
+                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+        playlistRepository.delete(playlist); // 플레이리스트 삭제
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content 반환
     }
 }
