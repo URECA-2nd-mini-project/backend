@@ -20,7 +20,7 @@ public class PlayHistoryController {
     this.playHistoryService = playHistoryService;
   }
 
-  // 1. 특정 유저의 최근 재생 기록을 모두 조회하는 GET 요청 (Request Body에서 userId 받음)
+  // 1. 특정 유저의 최근 재생 기록을 모두 조회하는 GET 요청
   @GetMapping("/{userId}")
   public List<PlayHistoryDto> getRecentPlayHistory(@PathVariable String userId) {
     List<PlayHistory> playHistories = playHistoryService.getRecentPlayHistory(userId);
