@@ -16,24 +16,27 @@ import mue.repository.EmotionLogRepository;
 @Service
 public class EmotionLogService {
 
-    @Autowired
-    private EmotionLogRepository emotionLogRepository;
-    @Autowired
-    private MusicService musicService; // MusicService 주입
-    @Autowired
-    private EmotionTagService emotionTagService; // EmotionTagService 주입
-    @Autowired
-    // private UserService userService; // UserService 주입
+    private final EmotionLogRepository emotionLogRepository;
+    private final MusicService musicService; 
+    private final EmotionTagService emotionTagService; 
 
+    @Autowired // 생성자 주입
+    public EmotionLogService(EmotionLogRepository emotionLogRepository,
+                             MusicService musicService,
+                             EmotionTagService emotionTagService) {
+        this.emotionLogRepository = emotionLogRepository;
+        this.musicService = musicService;
+        this.emotionTagService = emotionTagService;
+    }
     public EmotionLog createEmotionLog(String userId, String musicId, String emotionTagId, String contents) {
-        // User user = userService.findById(userId); // 사용자 정보 가져오기
         Music music = musicService.getMusicById(musicId); // 음악 정보 가져오기
-        EmotionTag emotionTag = emotionTagService.findById(emotionTagId); // 감정 태그 정보 가져오기
+        EmotionTag emotionTag = emotionTagService.getEmotionTagsByUserId(emotionTagId)
+                .orElseThrow(() -> new RuntimeException("EmotionTag를 찾을 수 없습니다.")); // 감정 태그 정보 가져오기
 
         //객체 생성 및 속성 설정
         EmotionLog emotionLog = new EmotionLog();
         emotionLog.setEmotionLogId(generateEmotionLogId()); // 고유 ID 설정 (감정로그 식별)
-        emotionLog.setUser(user);
+        emotionLog.setUserId(userId); // 사용자 ID 설정
         emotionLog.setMusic(music);
         emotionLog.setEmotionTag(emotionTag);
         emotionLog.setContents(contents);
@@ -44,9 +47,10 @@ public class EmotionLogService {
     
 
     // 사용자 감정 로그 조회
-    public List<EmotionLog> getEmotionLogsByUser(User user) {
-        return emotionLogRepository.findByUser(user);
+    public List<EmotionLog> getEmotionLogsByUser(String userId) {
+        return emotionLogRepository.findByUserId(userId); // 사용자 ID로 조회
     }
+
 
     // ID 생성 로직 
     private String generateEmotionLogId() {
