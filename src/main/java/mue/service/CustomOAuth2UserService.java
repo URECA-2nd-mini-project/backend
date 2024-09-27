@@ -8,6 +8,8 @@ import mue.repository.UserRepository;
 // 전체적인 보안 설정을 관리
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -20,39 +22,46 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final UserRepository userRepository;
     private final HttpSession httpSession;
-	
+
+    @Autowired
+    public CustomOAuth2UserService(UserRepository userRepository, HttpSession httpSession) {
+        this.userRepository = userRepository;
+        this.httpSession = httpSession;
+    }
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
-		
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-		
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-		
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()
+                .getUserNameAttributeName();
+
+        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
+                oAuth2User.getAttributes());
+
         User user = saveOrUpdate(attributes);
-		
+
         httpSession.setAttribute("user", new SessionUser(user));
-		
+
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(
                         user.getRoleKey())),
-                        attributes.getAttributes(),
-                        attributes.getNameAttributeKey()
-        );
+                attributes.getAttributes(),
+                attributes.getNameAttributeKey());
     }
-	
+
+    // DB에 유저 정보가 있는지 확인, 없는 경우 추가하고 이미 존재하는 경우 정보 업데이트
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByGmail(attributes.getEmail()) // findByEmail을 findByGmail로 변경
                 .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
                 .orElse(attributes.toEntity());
-        
+
         return userRepository.save(user);
     }
-    
+
 }
