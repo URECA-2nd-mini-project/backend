@@ -1,50 +1,53 @@
 package mue.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import mue.entity.BaseTimeEntity;
+import mue.enums.Role; // Role enum 추가
 
-@Entity
-@Table(name = "user") // 테이블 이름을 소문자로 해주는 것이 일반적
-public class User {
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-  @Id
-  @Column(name = "user_id", nullable = false, length = 255)
-  private String userId;
+@Getter // Getter 생성
+@NoArgsConstructor // Default 생성자
+@Entity // Entity임을 명시
+@Table(name = "user") // 테이블 이름을 소문자로 설정
+public class User extends BaseTimeEntity { // BaseTimeEntity 상속
+    
+    @Id // Primary Key
+    @Column(name = "user_id", nullable = false, length = 255)
+    private String userId;
+    
+    @Column(name = "name", nullable = false, length = 100) // name 필드 추가
+    private String name; // name 필드 추가
 
-  @Column(name = "gmail", nullable = false, length = 255)
-  private String gmail;
+    @Column(name = "gmail", nullable = false, length = 255)
+    private String gmail; 
+    
+    @Column(name = "photo_url", length = 512)
+    private String photoUrl;
+    
+    @Enumerated(EnumType.STRING) // Enum 값 저장
+    @Column(nullable = false)
+    private Role role;
 
-  @Column(name = "photo_url", length = 512)
-  private String photoUrl;
+    @Builder
+    public User(String userId, String name, String gmail, String photoUrl, Role role) { // 'gmail' 사용
+        this.userId = userId;
+        this.name = name;
+        this.gmail = gmail; // 여기서 'gmail'을 초기화
+        this.photoUrl = photoUrl;
+        this.role = role;
+    }
 
-  // 기본 생성자
-  public User() {
-  }
+    // update 함수 구현
+    public User update(String gmail, String photoUrl) {
+        this.gmail = gmail;
+        this.photoUrl = photoUrl;
+        return this;
+    }
 
-  // Getter, Setter
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public String getGmail() {
-    return gmail;
-  }
-
-  public void setGmail(String gmail) {
-    this.gmail = gmail;
-  }
-
-  public String getPhotoUrl() {
-    return photoUrl;
-  }
-
-  public void setPhotoUrl(String photoUrl) {
-    this.photoUrl = photoUrl;
-  }
+    public String getRoleKey() {
+        return this.role.getKey();
+    }
 }
