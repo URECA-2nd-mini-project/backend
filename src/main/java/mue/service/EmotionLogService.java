@@ -29,15 +29,22 @@ public class EmotionLogService {
         this.emotionTagService = emotionTagService;
     }
     public EmotionLog createEmotionLog(String userId, String musicId, String emotionTagId, String contents) {
-        Music music = musicService.getMusicById(musicId); // 음악 정보 가져오기
-        EmotionTag emotionTag = emotionTagService.getEmotionTagsByUserId(emotionTagId)
-                .orElseThrow(() -> new RuntimeException("EmotionTag를 찾을 수 없습니다.")); // 감정 태그 정보 가져오기
+        // Music music = musicService.getMusicById(musicId); // 음악 정보 가져오기
+          // List<EmotionTag>에서 단일 EmotionTag를 가져오기
+    List<EmotionTag> emotionTags = emotionTagService.getEmotionTagsByUserId(emotionTagId);
+
+    // 수정: EmotionTag가 없을 경우 예외를 던짐
+    if (emotionTags.isEmpty()) {
+        throw new RuntimeException("EmotionTag를 찾을 수 없습니다."); // 다른 예외 클래스를 사용할 수도 있음
+    }
+
+    EmotionTag emotionTag = emotionTags.get(0); // 첫 번째 요소를 사용
 
         //객체 생성 및 속성 설정
         EmotionLog emotionLog = new EmotionLog();
         emotionLog.setEmotionLogId(generateEmotionLogId()); // 고유 ID 설정 (감정로그 식별)
         emotionLog.setUserId(userId); // 사용자 ID 설정
-        emotionLog.setMusic(music);
+        // emotionLog.setMusic(music);
         emotionLog.setEmotionTag(emotionTag);
         emotionLog.setContents(contents);
         emotionLog.setCreatedAt(new Date());

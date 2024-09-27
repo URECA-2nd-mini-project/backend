@@ -67,21 +67,27 @@ public class EmotionLogController {
           
            userId = getUserIdFromSession();  // 세션에서 사용자 정보 가져오기
         Music music = musicService.getMusicById(musicId); // 음악 정보 가져오기
-        EmotionTag emotionTag = emotionTagService.getEmotionTagsByUserId(emotionTagId) // 감정태그 가져오기
-                .orElseThrow(() -> new RuntimeException("EmotionTag를 찾을 수 없습니다."));
+       // EmotionTag를 가져오고, 리스트가 비어있으면 예외 처리
+    List<EmotionTag> emotionTags = emotionTagService.getEmotionTagsByUserId(emotionTagId);
+    if (emotionTags.isEmpty()) {
+        throw new RuntimeException("EmotionTag를 찾을 수 없습니다."); // 예외 처리
+    }
+    
+    EmotionTag emotionTag = emotionTags.get(0); // 첫 번째 EmotionTag 사용
 
+    // EmotionLog 객체 생성 및 설정
+    EmotionLog savedEmotionLog = emotionLogService.createEmotionLog(userId, musicId, emotionTag.getEmotionTagId(), contents);
 
+    // DTO 변환
     EmotionLogDto emotionLogDto = new EmotionLogDto();
     emotionLogDto.setMusic(music);
     emotionLogDto.setEmotionTag(emotionTag);
     emotionLogDto.setContents(contents);
     emotionLogDto.setCreatedAt(new Date());
 
-    EmotionLog savedEmotionLog = emotionLogService.createEmotionLog(userId, musicId, emotionTagId, contents);
-
     return ResponseEntity.status(HttpStatus.CREATED)
-    .body(new ApiResponseDto(true, "감정 로그가 성공적으로 생성되었습니다.", savedEmotionLog));
-    }
+            .body(new ApiResponseDto(true, "감정 로그가 성공적으로 생성되었습니다.", savedEmotionLog));
+}
 
     @GetMapping("/user")
     public ResponseEntity<ApiResponseDto> getEmotionLogsByUser() {
