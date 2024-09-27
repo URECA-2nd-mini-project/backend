@@ -1,56 +1,33 @@
 package mue.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import mue.entity.Playlist;
+import mue.entity.User; 
+//User entity 사용명시하기
+
 import java.io.Serializable;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlaylistDto implements Serializable {
+    private String playlistId; 
+    private String userId; 
+    private String playlistTitle; 
+    private String userImg; 
+    private String contents; 
 
-    private String playlistId;
-    private String userId; // 사용자 ID를 포함
-    private String name;
-    private String contents;
+    // Playlist 엔티티로 변환하는 메서드
+    public Playlist toPlaylist(User user) { // User를 참조함으로써, 각 플레이리스트가 어떤 사용자에 의해 생성되었는지 알 수 있음.
 
-    // 기본 생성자
-    public PlaylistDto() {
-    }
-
-    // 생성자
-    public PlaylistDto(String playlistId, String userId, String name, String contents) {
-        this.playlistId = playlistId;
-        this.userId = userId;
-        this.name = name;
-        this.contents = contents;
-    }
-
-    // Getter 및 Setter
-    public String getPlaylistId() {
-        return playlistId;
-    }
-
-    public void setPlaylistId(String playlistId) {
-        this.playlistId = playlistId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContents() {
-        return contents;
-    }
-
-    public void setContents(String contents) {
-        this.contents = contents;
+        return new Playlist(
+            this.playlistId,
+            user, // User 엔티티를 인자로 받아 설정
+            this.playlistTitle,
+            null, // 이미지의 경우 별도로 처리할 수 있음
+            this.contents
+        );
     }
 }

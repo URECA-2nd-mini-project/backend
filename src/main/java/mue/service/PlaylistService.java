@@ -1,14 +1,12 @@
 package mue.service;
 
-import java.io.File;
-import java.io.IOException;
+
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import mue.entity.Playlist;
 import mue.repository.PlaylistRepository;
@@ -49,30 +47,37 @@ public class PlaylistService {
         Playlist existingPlaylist = playlistRepository.findByPlaylistId(playlistId)
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
         // 수정하기
-        existingPlaylist.setName(updatedPlaylist.getName()); // 플레이리스트 이름 수정
+        existingPlaylist.setPlaylistTitle(updatedPlaylist.getPlaylistTitle()); // 플레이리스트 이름 수정
         existingPlaylist.setContents(updatedPlaylist.getContents()); // 플레이리스트 설명 수정
         return playlistRepository.save(existingPlaylist); // 수정된 플레이리스트 저장
     }
 
-    // 이미지 저장 메소드 {/*이미지 로컬 저장법 수정 필요*/}
-    public String saveImage(MultipartFile image) {
-        try {
-            String uploadDir = "path/to/upload/directory"; // 서버에 저장할 경로
-            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename(); // 중복 방지 파일명 생성
-            File file = new File(uploadDir, fileName); // 파일 객체 생성
-            image.transferTo(file); // 유저 이미지 저장 
+    // // 이미지 저장 메소드 {/*이미지 로컬 저장법 수정 필요*/} -> 이미지 컨트롤러 따로 생성필요
+    // public String saveImage(MultipartFile image) {
+    //     try {
+    //         String uploadDir = "path/to/upload/directory"; // 서버에 저장할 경로
+    //         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename(); // 중복 방지 파일명 생성
+    //         File file = new File(uploadDir, fileName); // 파일 객체 생성
+    //         image.transferTo(file); // 유저 이미지 저장 
             
-            return "/uploads/" + fileName; // 저장된 파일의 URL 반환
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save image: " + e.getMessage()); // 예외 처리
-        }
-    }
+    //         return "/uploads/" + fileName; // 저장된 파일의 URL 반환
+    //     } catch (IOException e) {
+    //         throw new RuntimeException("Failed to save image: " + e.getMessage()); // 예외 처리
+    //     }
+    // }
 
     // 플레이리스트 삭제
     public ResponseEntity<Void> deletePlaylist(String playlistId) {
         // 플레이리스트를 찾아서 없으면 예외 처리
         Playlist playlist = playlistRepository.findByPlaylistId(playlistId)
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
+
+        // 이미지 경로가 존재하면 이미지 삭제 로직 추가 (추가할 경우)
+        if (playlist.getCover() != null) {
+            // 이미지 삭제 로직
+            // imageService.deleteImage(playlist.getCover());
+        }
+
         playlistRepository.delete(playlist); // 플레이리스트 삭제
         return ResponseEntity.noContent().build(); // HTTP 204 No Content 반환
     }
