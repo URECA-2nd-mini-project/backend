@@ -45,7 +45,7 @@ public class ImageService {
     public void deleteImage(String userImg) {
         try {
             // userImg에서 /uploads/ 부분을 제거하여 실제 경로를 생성
-            Path path = Paths.get(uploadDir + userImg.replace("/uploads/", ""));
+            Path path = Paths.get(uploadDir + userImg.replace("/mue_uploads/image/", ""));
             Files.deleteIfExists(path); // 파일 삭제
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete image: " + e.getMessage()); // 예외 처리
