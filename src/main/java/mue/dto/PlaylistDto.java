@@ -1,33 +1,36 @@
 package mue.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mue.entity.Playlist;
-import mue.entity.User; 
+import mue.entity.User;
 //User entity 사용명시하기
 
 import java.io.Serializable;
 
+import org.springframework.web.multipart.MultipartFile;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PlaylistDto implements Serializable {
-    private String playlistId; 
-    private String userId; 
-    private String playlistTitle; 
-    private String userImg; 
-    private String contents; 
+    private String playlistId;
+    private User user; // User 엔티티의 ID만 보유
+    private String playlistTitle;
+    private MultipartFile userImg; // 파일로 변경
+    private String contents;
 
     // Playlist 엔티티로 변환하는 메서드
-    public Playlist toPlaylist(User user) { // User를 참조함으로써, 각 플레이리스트가 어떤 사용자에 의해 생성되었는지 알 수 있음.
-
-        return new Playlist(
-            this.playlistId,
-            user, // User 엔티티를 인자로 받아 설정
-            this.playlistTitle,
-            null, // 이미지의 경우 별도로 처리할 수 있음
-            this.contents
-        );
+    public Playlist toPlaylist(User user, String userImgPath) { // 파일 경로를 인자로 받음
+        return Playlist.builder()
+                .playlistId(this.playlistId)
+                .user(user) // 전달받은 User 엔티티 설정
+                .playlistTitle(this.playlistTitle)
+                .userImg(userImgPath) // 파일 경로를 userImg에 저장
+                .contents(this.contents)
+                .build();
     }
 }

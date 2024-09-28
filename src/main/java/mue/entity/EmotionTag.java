@@ -1,10 +1,16 @@
 package mue.entity;
 
-import jakarta.persistence.*;
 import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "emotion_tag")
+@Data // @Getter, @Setter, @RequiredArgsConstructor, @ToString, @EqualsAndHashCode를 포함
+@NoArgsConstructor // 기본 생성자 생성
+@AllArgsConstructor // 모든 필드를 포함한 생성자 생성
+@Builder
 public class EmotionTag {
 
   @Id
@@ -14,52 +20,14 @@ public class EmotionTag {
   @Column(name = "emotion_tag", nullable = false)
   private String emotionTag;
 
-  @Column(name = "user_id", nullable = false)
-  private String userId;
+  // User와 다대일 관계 설정
+  @ManyToOne(fetch = FetchType.LAZY) // 지연 로딩 사용
+  @JoinColumn(name = "user_id", nullable = false) // 외래키 설정
+  @ToString.Exclude // toString에서 제외 (순환 참조 방지)
+  private User user;
 
+  // EmotionLog와 일대다 관계 설정
   @OneToMany(mappedBy = "emotionTag", cascade = CascadeType.ALL, orphanRemoval = true)
+  @ToString.Exclude // toString에서 제외 (순환 참조 방지)
   private List<EmotionLog> emotionLogs;
-
-  // 기본 생성자
-  public EmotionTag() {
-  }
-
-  public EmotionTag(String emotionTagId, String emotionTag, String userId, List<EmotionLog> emotionLogs) {
-    this.emotionTagId = emotionTagId;
-    this.emotionTag = emotionTag;
-    this.userId = userId;
-    this.emotionLogs = emotionLogs;
-  }
-
-  public String getEmotionTagId() {
-    return emotionTagId;
-  }
-
-  public void setEmotionTagId(String emotionTagId) {
-    this.emotionTagId = emotionTagId;
-  }
-
-  public String getEmotionTag() {
-    return emotionTag;
-  }
-
-  public void setEmotionTag(String emotionTag) {
-    this.emotionTag = emotionTag;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public List<EmotionLog> getEmotionLogs() {
-    return emotionLogs;
-  }
-
-  public void setEmotionLogs(List<EmotionLog> emotionLogs) {
-    this.emotionLogs = emotionLogs;
-  }
 }

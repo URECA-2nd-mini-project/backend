@@ -1,6 +1,5 @@
 package mue.service;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -14,31 +13,25 @@ import mue.repository.PlaylistRepository;
 @Service
 public class PlaylistService {
 
-    @Autowired     
-    private PlaylistRepository playlistRepository; 
+    @Autowired
+    private PlaylistRepository playlistRepository;
 
     // 사용자 ID로 모든 플레이리스트 찾기
     public List<Playlist> getAllPlaylistsByUserId(String userId) {
-    // 사용자 ID에 따른 플레이리스트 목록 반환
-        return playlistRepository.findByUserId(userId); 
+        // 사용자 ID에 따른 플레이리스트 목록 반환
+        return playlistRepository.findByUser_UserId(userId);
     }
 
     // 플레이리스트 ID로 플레이리스트 세부정보 찾기
     public Optional<Playlist> getPlaylistById(String playlistId) {
-    // 플레이리스트 ID로 세부정보 반환
-        return playlistRepository.findByPlaylistId(playlistId); 
-    }
-
-    // 특정 감정 태그를 가진 플레이리스트를 찾는 메소드
-    public List<Playlist> getPlaylistsByUserIdAndEmotionTag(String userId, String emotionTag) {
-    // 감정 태그에 따른 플레이리스트 반환
-        return playlistRepository.findByUserIdAndEmotionTag(userId, emotionTag); 
+        // 플레이리스트 ID로 세부정보 반환
+        return playlistRepository.findByPlaylistId(playlistId);
     }
 
     // 플레이리스트 생성
     public Playlist createPlaylist(Playlist playlist) {
-    // 새 플레이리스트 저장
-        return playlistRepository.save(playlist); 
+        // 새 플레이리스트 저장
+        return playlistRepository.save(playlist);
     }
 
     // 플레이리스트 수정

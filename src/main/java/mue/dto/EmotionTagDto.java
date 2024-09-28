@@ -1,5 +1,6 @@
 package mue.dto;
 
+import mue.entity.*;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,20 +16,22 @@ import mue.entity.EmotionTag;
 @Builder
 public class EmotionTagDto {
   private String emotionTag;
-  private String userId;
+  private String emotionTagId;
 
   public static EmotionTagDto fromEntity(EmotionTag emotionTag) {
     return EmotionTagDto.builder()
         .emotionTag(emotionTag.getEmotionTag())
-        .userId(emotionTag.getUserId())
+        .emotionTagId(emotionTag.getEmotionTagId())
         .build();
   }
 
-  public static EmotionTag toEntity(EmotionTagDto dto) {
-    return new EmotionTag(
-        null,
-        dto.getEmotionTag(),
-        dto.getUserId(),
-        List.of());
+  // EmotionTagDto를 EmotionTag 엔티티로 변환
+  public static EmotionTag toEntity(EmotionTagDto dto, User user) {
+    return EmotionTag.builder()
+        .emotionTagId(UUID.randomUUID().toString()) // UUID로 emotionTagId 생성
+        .emotionTag(dto.getEmotionTag()) // dto의 emotionTag 설정
+        .user(user) // 매개변수로 받은 user 객체 설정
+        .emotionLogs(List.of()) // 빈 리스트로 초기화 (필요에 따라 설정)
+        .build();
   }
 }

@@ -1,11 +1,8 @@
 package mue.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -13,28 +10,27 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmotionLog implements Serializable {
+@Builder
+public class EmotionLog {
 
     @Id
     @Column(name = "emotion_log_id", nullable = false, unique = true)
     private String emotionLogId;
 
+    // Music 엔티티와 다대일 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "music_id", nullable = false) // FK로 Music 테이블의 musicId 참조
+    @JoinColumn(name = "music_id", nullable = false) // Music 테이블의 music_id를 외래키로 설정
     private Music music;
 
+    // EmotionTag 엔티티와 다대일 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "emotion_tag_id", nullable = false) // FK로 EmotionTag 테이블의 emotionTagId 참조
+    @JoinColumn(name = "emotion_tag_id", nullable = false)
     private EmotionTag emotionTag;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false) // FK로 User 테이블의 userId 참조
-    private String userId;
-
-    @Column(name = "contents", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "contents", columnDefinition = "TEXT")
     private String contents;
 
-    @Temporal(TemporalType.TIMESTAMP) // 날짜 및 시간 데이터를 나타내기 위한 어노테이션
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 }

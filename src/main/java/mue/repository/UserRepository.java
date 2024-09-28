@@ -1,14 +1,14 @@
 package mue.repository;
 
 import mue.entity.*;
+import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 // User 엔티티에 대한 CRUD 작업을 처리
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    // Gmail로 User 엔티티 조회
-    Optional<User> findByGmail(String gmail);
+    // userId로 User 엔티티 조회
+    Optional<User> findByUserId(String userId);
 }

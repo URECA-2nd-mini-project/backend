@@ -29,7 +29,8 @@ public class SecurityConfig {
     private final HttpSession httpSession; // 의존성 주입
 
     @Autowired
-    public SecurityConfig(UserRepository userRepository, HttpSession httpSession) {
+    public SecurityConfig(UserRepository userRepository, HttpSession httpSession,
+            CustomOAuth2UserService customOAuth2UserService) {
         this.userRepository = userRepository;
         this.httpSession = httpSession;
     }
@@ -38,7 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/api/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/login", "/api/**", "/oauth2/**", "/home").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/") // 로그아웃 성공 후 리다이렉트
@@ -47,14 +48,13 @@ public class SecurityConfig {
                         .defaultSuccessUrl("http://localhost:5173/EmotionBoard") // 로그인 성공 후 리다이렉트할 프론트엔드 URL
                         .failureUrl("/") // 로그인 실패 시 리다이렉트할 URL
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService()) // OAuth2 사용자 정보를 처리
+                                .userService(customOAuth2UserServiceBean()) // OAuth2 사용자 정보를 처리
                         ));
 
         return http.build();
     }
 
-    @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserServiceBean() {
         return new CustomOAuth2UserService(userRepository, httpSession);
     }
 

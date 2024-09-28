@@ -12,11 +12,14 @@ import org.springframework.data.repository.query.Param;
 public interface MusicRepository extends JpaRepository<Music, String> {
 
   // 1. 특정 플레이리스트에 포함된 음악 조회
-  List<Music> findByPlaylist(String playlistId);
+  List<Music> findByPlaylist(Playlist playlist);
 
   // 2. 특정 감정이 기록된 음악 조회
   @Query("SELECT m FROM Music m JOIN EmotionLog el ON m.musicId = el.music.musicId " +
       "JOIN EmotionTag et ON el.emotionTag.emotionTagId = et.emotionTagId " +
       "WHERE et.emotionTag = :emotionTag")
   List<Music> findByEmotionTag(@Param("emotionTag") String emotionTag);
+
+  // 3. musicId로 음악 조회
+  Music findByMusicId(String musicId);
 }

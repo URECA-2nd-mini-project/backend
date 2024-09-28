@@ -1,33 +1,38 @@
 package mue.entity;
 
 import jakarta.persistence.*;
-import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data //모든 필드에 대한 Getter, Setter, toString, equals, hashCode 메서드를 자동으로 생성
-@NoArgsConstructor //인자가 없는 기본 생성자를 생성
-@AllArgsConstructor // 필드를 인자로 받는 생성자를 생성
+import java.util.List;
+
 @Entity
 @Table(name = "playlist")
-public class Playlist implements Serializable {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Playlist {
 
     @Id
     @Column(name = "playlist_id", nullable = false, unique = true)
     private String playlistId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false) // FK로 User 테이블의 id 참조
-    private User user; // User 엔티티로 설정
-
     @Column(name = "playlist_title", nullable = false)
     private String playlistTitle;
 
-    @Column(name = "user_img") // 사용자 이미지 URL
-    private String userImg; // 사용자 이미지 URL을 저장
+    @Column(name = "user_img")
+    private String userImg; // URL로 저장 (필드명에서 _를 제거)
 
     @Column(name = "contents", columnDefinition = "TEXT")
     private String contents;
 
+    // Music 엔티티와의 일대다 관계 설정
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // toString에서 제외 (순환 참조 방지)
+    private List<Music> musicList;
+
+    // User 엔티티와 다대일 관계 설정 (필요시 설정)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

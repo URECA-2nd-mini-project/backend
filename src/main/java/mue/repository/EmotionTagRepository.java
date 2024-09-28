@@ -12,4 +12,5 @@ public interface EmotionTagRepository extends JpaRepository<EmotionTag, String> 
   @Query("SELECT e FROM EmotionTag e WHERE e.user.userId = :userId")
   List<EmotionTag> findAllByUserId(@Param("userId") String userId);
 
+  EmotionTag findByUser_UserId(@Param("userId") String userId);
 }

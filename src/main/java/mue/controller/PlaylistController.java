@@ -24,7 +24,6 @@ public class PlaylistController {
     @Autowired
     private PlaylistService playlistService;
 
-
     // 사용자 ID로 모든 플레이리스트 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Playlist>> getAllPlaylistsByUserId(@PathVariable String userId) {
@@ -36,15 +35,8 @@ public class PlaylistController {
     @GetMapping("/{playlistId}")
     public ResponseEntity<Playlist> getPlaylistById(@PathVariable String playlistId) {
         Playlist playlist = playlistService.getPlaylistById(playlistId)
-                                           .orElseThrow(() -> new RuntimeException("Playlist not found"));
+                .orElseThrow(() -> new RuntimeException("Playlist not found"));
         return new ResponseEntity<>(playlist, HttpStatus.OK);
-    }
-    // 특정 감정 태그를 가진 플레이리스트 조회
-    @GetMapping("/user/{userId}/emotion/{emotionTag}")
-    public ResponseEntity<List<Playlist>> getPlaylistsByUserIdAndEmotionTag(@PathVariable String userId, 
-                                                                             @PathVariable String emotionTag) {
-        List<Playlist> playlists = playlistService.getPlaylistsByUserIdAndEmotionTag(userId, emotionTag);
-        return new ResponseEntity<>(playlists, HttpStatus.OK);
     }
 
     // 플레이리스트 생성
@@ -56,8 +48,8 @@ public class PlaylistController {
 
     // 플레이리스트 수정
     @PutMapping("/{playlistId}")
-    public ResponseEntity<Playlist> updatePlaylist(@PathVariable String playlistId, 
-                                                   @RequestBody Playlist updatedPlaylist) {
+    public ResponseEntity<Playlist> updatePlaylist(@PathVariable String playlistId,
+            @RequestBody Playlist updatedPlaylist) {
         Playlist playlist = playlistService.updatePlaylist(playlistId, updatedPlaylist);
         return new ResponseEntity<>(playlist, HttpStatus.OK);
     }

@@ -1,8 +1,8 @@
 package mue.service;
 
-import mue.entity.EmotionTag;
-import mue.entity.EmotionLog;
-import mue.repository.EmotionTagRepository;
+import mue.entity.*;
+import mue.repository.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +13,20 @@ import java.util.UUID;
 public class EmotionTagService {
 
   private final EmotionTagRepository emotionTagRepository;
+  private final UserRepository userRepository;
 
   @Autowired
-  public EmotionTagService(EmotionTagRepository emotionTagRepository) {
+  public EmotionTagService(EmotionTagRepository emotionTagRepository, UserRepository userRepository) {
     this.emotionTagRepository = emotionTagRepository;
+    this.userRepository = userRepository;
   }
 
   // 1. 감정 태그 생성 및 저장
   public EmotionTag createEmotionTag(String emotionTag, String userId) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다. ID: " + userId));
+    ;
+
     // UUID를 이용해 고유 ID 생성
     String emotionTagId = UUID.randomUUID().toString();
 
@@ -31,7 +37,7 @@ public class EmotionTagService {
     EmotionTag newEmotionTag = new EmotionTag(
         emotionTagId, // 생성된 고유 ID
         emotionTag, // 전달받은 감정 태그
-        userId, // 전달받은 유저 ID
+        user, // userId를 통해 찾은 user 정보
         emptyEmotionLogs // 빈 감정 기록 리스트
     );
 

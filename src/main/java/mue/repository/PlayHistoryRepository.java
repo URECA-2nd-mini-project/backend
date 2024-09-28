@@ -10,8 +10,8 @@ import java.util.List;
 public interface PlayHistoryRepository extends JpaRepository<PlayHistory, String> {
 
   // 특정 유저의 모든 재생 기록 조회
-  List<PlayHistory> findByUserId(String userId);
+  List<PlayHistory> findByUser_UserId(String userId);
 
-  // 특정 유저의 최근 재생 기록 상위 5개 조회
-  List<PlayHistory> findTop5ByUserIdOrderByPlayedAtDesc(String userId);
+  // 특정 유저의 최근 재생 기록 조회
+  List<PlayHistory> findTop5ByUser_UserIdOrderByPlayedAtDesc(String userId);
 }
