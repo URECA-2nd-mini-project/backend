@@ -33,7 +33,7 @@ public class EmotionTagController {
     if (sessionUser == null) {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
-    String userId = sessionUser.getGmail(); // NOTE Gmail 사용? 서버에서 자체적으로 발급한 ID 사용?
+    String userId = sessionUser.getUser().getUserId(); // NOTE Gmail 사용? 서버에서 자체적으로 발급한 ID 사용?
     List<EmotionTag> emotionTags = emotionTagService.getEmotionTagsByUserId(userId);
 
     return emotionTags.stream()
@@ -50,10 +50,10 @@ public class EmotionTagController {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
 
-    String userId = sessionUser.getGmail(); // NOTE Gmail 사용? 서버에서 자체적으로 발급한 ID 사용?
-    EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto);
+    EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto, sessionUser.getUser());
 
-    EmotionTag savedEmotionTag = emotionTagService.createEmotionTag(emotionTag.getEmotionTag(), userId);
+    EmotionTag savedEmotionTag = emotionTagService.createEmotionTag(emotionTag.getEmotionTag(),
+        sessionUser.getUser().getUserId());
     return EmotionTagDto.fromEntity(savedEmotionTag);
   }
 }

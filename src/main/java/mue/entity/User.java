@@ -1,53 +1,50 @@
 package mue.entity;
 
-import mue.entity.BaseTimeEntity;
-import mue.enums.Role; // Role enum 추가
-
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import mue.enums.Role;
 
-@Getter // Getter 생성
-@NoArgsConstructor // Default 생성자
-@Entity // Entity임을 명시
-@Table(name = "user") // 테이블 이름을 소문자로 설정
-public class User extends BaseTimeEntity { // BaseTimeEntity 상속
-    
-    @Id // Primary Key
-    @Column(name = "user_id", nullable = false, length = 255)
+import java.util.List;
+
+@Entity
+@Table(name = "user")
+@Data // @Getter, @Setter, @RequiredArgsConstructor, @ToString, @EqualsAndHashCode를 포함
+@NoArgsConstructor // 기본 생성자 생성
+@AllArgsConstructor // 모든 필드를 포함한 생성자 생성
+@Builder
+public class User {
+
+    @Id
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
-    
-    @Column(name = "name", nullable = false, length = 100) // name 필드 추가
-    private String name; // name 필드 추가
 
-    @Column(name = "gmail", nullable = false, length = 255)
-    private String gmail; 
-    
-    @Column(name = "photo_url", length = 512)
+    @Column(name = "gmail", nullable = false)
+    private String gmail;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "photo_url")
     private String photoUrl;
-    
+
     @Enumerated(EnumType.STRING) // Enum 값 저장
     @Column(nullable = false)
     private Role role;
 
-    @Builder
-    public User(String userId, String name, String gmail, String photoUrl, Role role) { // 'gmail' 사용
-        this.userId = userId;
-        this.name = name;
-        this.gmail = gmail; // 여기서 'gmail'을 초기화
-        this.photoUrl = photoUrl;
-        this.role = role;
-    }
+    // EmotionTag 테이블과 일대다 매핑
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // toString에서 제외 (순환 참조 방지)
+    private List<EmotionTag> emotionTags;
 
-    // update 함수 구현
-    public User update(String gmail, String photoUrl) {
+    // Playlist와의 일대다 관계 설정
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // 순환 참조 방지
+    private List<Playlist> playlists;
+
+    public User update(String name, String gmail, String photoUrl) {
+        this.name = name;
         this.gmail = gmail;
         this.photoUrl = photoUrl;
         return this;
-    }
-
-    public String getRoleKey() {
-        return this.role.getKey();
     }
 }

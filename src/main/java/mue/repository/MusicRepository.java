@@ -19,4 +19,7 @@ public interface MusicRepository extends JpaRepository<Music, String> {
       "JOIN EmotionTag et ON el.emotionTag.emotionTagId = et.emotionTagId " +
       "WHERE et.emotionTag = :emotionTag")
   List<Music> findByEmotionTag(@Param("emotionTag") String emotionTag);
+
+  // 3. musicId로 음악 조회
+  Music findByMusicId(String musicId);
 }

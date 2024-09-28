@@ -1,34 +1,21 @@
 package mue.service;
 
-import mue.entity.Music;
-import mue.entity.Playlist;
-import mue.entity.EmotionLog;
-import mue.entity.EmotionTag;
-import mue.repository.MusicRepository;
-import mue.repository.PlaylistRepository;
-import mue.repository.EmotionLogRepository;
-import mue.repository.EmotionTagRepository;
-
+import java.util.*;
+import mue.entity.*;
+import mue.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class MusicService {
 
     private final MusicRepository musicRepository;
     private final PlaylistRepository playlistRepository;
-    private final EmotionLogRepository emotionLogRepository;
-    private final EmotionTagRepository emotionTagRepository;
 
     @Autowired
-    public MusicService(MusicRepository musicRepository, PlaylistRepository playlistRepository,
-            EmotionLogRepository emotionLogRepository, EmotionTagRepository emotionTagRepository) {
+    public MusicService(MusicRepository musicRepository, PlaylistRepository playlistRepository) {
         this.musicRepository = musicRepository;
         this.playlistRepository = playlistRepository;
-        this.emotionLogRepository = emotionLogRepository;
-        this.emotionTagRepository = emotionTagRepository;
     }
 
     // 1. 특정 유저의 특정 플레이리스트에 포함된 모든 음악 조회
@@ -45,7 +32,8 @@ public class MusicService {
     }
 
     // 2. 특정 유저의 특정 플레이리스트에 곡 추가
-    public Music addMusicToUserPlaylist(String userId, String playlistId, String title, String artist, int duration,
+    public Music addMusicToUserPlaylist(String musicId, String userId, String playlistId, String title, String artist,
+            int duration,
             String thumbnail, String lyrics) {
         // 해당 플레이리스트가 특정 유저의 것인지 확인
         Optional<Playlist> playlist = playlistRepository.findById(playlistId);
@@ -59,14 +47,14 @@ public class MusicService {
 
             // 새로운 음악 생성
             Music newMusic = new Music(
-                    UUID.randomUUID().toString(), // musicId는 UUID로 생성
-                    title,
-                    artist,
-                    duration,
-                    thumbnail,
-                    lyrics,
+                    musicId, // 음악 ID
+                    title, // 음악 제목
+                    artist, // 아티스트 이름
+                    duration, // 재생 시간
+                    thumbnail, // 썸네일 URL
+                    lyrics, // 가사
                     currentPlayedAt, // playedAt은 현재 시간으로 설정
-                    playlist.get(), // 플레이리스트 객체 전달
+                    playlist.get(), // 플레이리스트 객체 전달 (Optional로 감싸져 있다면 get()으로 추출)
                     emptyEmotionLogs // 초기에는 빈 감정 로그 리스트 전달
             );
 
@@ -87,17 +75,17 @@ public class MusicService {
             String musicId, String title, String artist, int duration, String thumbnail, String lyrics) {
 
         // Music 엔티티 생성
-        Music music = new Music(
-                musicId, // 음악 ID
-                title, // 음악 제목
-                artist, // 아티스트 이름
-                duration, // 재생 시간
-                thumbnail, // 썸네일 URL
-                lyrics, // 가사
-                new Date(), // 재생된 시간 (생성 시간)
-                null, // 플레이리스트와 연결하는 것이 아니므로 null 처리
-                List.of() // 초기 감정 로그 리스트는 비어 있음
-        );
+        Music music = Music.builder()
+                .musicId(musicId) // 음악 ID
+                .title(title) // 음악 제목
+                .artist(artist) // 아티스트 이름
+                .duration(duration) // 재생 시간
+                .thumbnail(thumbnail) // 썸네일 URL
+                .lyrics(lyrics) // 가사
+                .playedAt(new Date()) // 재생된 시간 (생성 시간)
+                .playlist(null) // 플레이리스트와 연결하는 것이 아니므로 null 처리
+                .emotionLogs(List.of()) // 초기 감정 로그 리스트는 비어 있음
+                .build();
 
         // Music 저장
         return musicRepository.save(music);

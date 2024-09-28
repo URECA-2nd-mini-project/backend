@@ -1,11 +1,17 @@
 package mue.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "music")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Music {
 
   @Id
@@ -31,101 +37,14 @@ public class Music {
   @Column(name = "played_at")
   private Date playedAt;
 
+  // Playlist 엔티티와 다대일 관계 설정
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "playlist_id") // FK로 Playlist 테이블의 playlistId 참조
+  @JoinColumn(name = "playlist_id", nullable = false)
   private Playlist playlist;
 
+  // EmotionLog와의 일대다 관계 설정
   @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+  @ToString.Exclude // toString에서 제외 (순환 참조 방지)
   private List<EmotionLog> emotionLogs;
 
-  // 기본 생성자
-  public Music() {
-  }
-
-  public Music(String musicId, String title, String artist, int duration, String thumbnail, String lyrics,
-      Date playedAt, Playlist playlist, List<EmotionLog> emotionLogs) {
-    this.musicId = musicId;
-    this.title = title;
-    this.artist = artist;
-    this.duration = duration;
-    this.thumbnail = thumbnail;
-    this.lyrics = lyrics;
-    this.playedAt = playedAt;
-    this.playlist = playlist;
-    this.emotionLogs = emotionLogs;
-  }
-
-  public String getMusicId() {
-    return musicId;
-  }
-
-  public void setMusicId(String musicId) {
-    this.musicId = musicId;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getArtist() {
-    return artist;
-  }
-
-  public void setArtist(String artist) {
-    this.artist = artist;
-  }
-
-  public int getDuration() {
-    return duration;
-  }
-
-  public void setDuration(int duration) {
-    this.duration = duration;
-  }
-
-  public String getThumbnail() {
-    return thumbnail;
-  }
-
-  public void setThumbnail(String thumbnail) {
-    this.thumbnail = thumbnail;
-  }
-
-  public String getLyrics() {
-    return lyrics;
-  }
-
-  public void setLyrics(String lyrics) {
-    this.lyrics = lyrics;
-  }
-
-  public Date getPlayedAt() {
-    return playedAt;
-  }
-
-  public void setPlayedAt(Date playedAt) {
-    this.playedAt = playedAt;
-  }
-
-  public Playlist getPlaylist() {
-    return playlist;
-  }
-
-  public void setPlaylist(Playlist playlist) {
-    this.playlist = playlist;
-  }
-
-  public List<EmotionLog> getEmotionLogs() {
-    return emotionLogs;
-  }
-
-  public void setEmotionLogs(List<EmotionLog> emotionLogs) {
-    this.emotionLogs = emotionLogs;
-  }
-
-  // 필요한 필드를 포함한 생성자 및 Getter, Setter 생략
 }
