@@ -55,8 +55,8 @@ public class EmotionLogService {
     }
 
     // 사용자 감정 로그 조회
-    public List<EmotionLog> getEmotionLogsByUser(String userId) {
-        return emotionLogRepository.findByUserId(userId); // 사용자 ID로 조회
+    public List<EmotionLog> getEmotionLogsByEmotionTagId(String emotionTagId) {
+        return emotionLogRepository.findByEmotionTag_EmotionTagId(emotionTagId); // 사용자 ID로 조회
     }
 
     // ID 생성 로직

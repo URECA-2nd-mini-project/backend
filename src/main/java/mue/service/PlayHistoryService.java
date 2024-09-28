@@ -1,7 +1,7 @@
 package mue.service;
 
-import mue.entity.PlayHistory;
-import mue.repository.PlayHistoryRepository;
+import mue.entity.*;
+import mue.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +13,20 @@ import java.util.UUID;
 public class PlayHistoryService {
 
   private final PlayHistoryRepository playHistoryRepository;
+  private final UserRepository userRepository;
 
   @Autowired
-  public PlayHistoryService(PlayHistoryRepository playHistoryRepository) {
+  public PlayHistoryService(PlayHistoryRepository playHistoryRepository, UserRepository userRepository) {
     this.playHistoryRepository = playHistoryRepository;
+    this.userRepository = userRepository;
   }
 
   // 1. 특정 유저의 재생 기록 저장
   public PlayHistory savePlayHistory(String userId, String musicId, String title, String artist) {
+    User user = userRepository.findByUserId(userId).get();
     PlayHistory playHistory = new PlayHistory(
         UUID.randomUUID().toString(), // 재생 기록 고유 ID 생성
-        userId,
+        user,
         musicId,
         title,
         artist,
@@ -34,8 +37,8 @@ public class PlayHistoryService {
     return playHistory;
   }
 
-  // 2. 특정 유저의 최근 재생 기록 상위 5개 조회
+  // 2. 특정 유저의 최근 재생 기록 조회
   public List<PlayHistory> getRecentPlayHistory(String userId) {
-    return playHistoryRepository.findTop5ByUserIdOrderByPlayedAtDesc(userId);
+    return playHistoryRepository.findTop5ByUser_UserIdOrderByPlayedAtDesc(userId);
   }
 }

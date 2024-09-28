@@ -21,11 +21,11 @@ public class MusicService {
     // 1. 특정 유저의 특정 플레이리스트에 포함된 모든 음악 조회
     public List<Music> getMusicByUserAndPlaylist(String userId, String playlistId) {
         // 해당 플레이리스트가 특정 유저의 것인지 확인
-        Optional<Playlist> playlist = playlistRepository.findById(playlistId);
+        Optional<Playlist> playlist = playlistRepository.findByPlaylistId(playlistId);
 
         if (playlist.isPresent() && playlist.get().getUser().getUserId().equals(userId)) {
             // 특정 플레이리스트에 포함된 모든 음악 조회
-            return musicRepository.findByPlaylist(playlistId);
+            return musicRepository.findByPlaylist(playlist.get());
         } else {
             throw new IllegalArgumentException("해당 유저의 플레이리스트가 아닙니다.");
         }

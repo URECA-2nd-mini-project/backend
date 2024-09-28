@@ -41,6 +41,11 @@ public class User {
     @ToString.Exclude // 순환 참조 방지
     private List<Playlist> playlists;
 
+    // PlayHistory와의 일대다 관계 설정
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // 순환 참조 방지
+    private List<PlayHistory> playHistories;
+
     public User update(String name, String gmail, String photoUrl) {
         this.name = name;
         this.gmail = gmail;

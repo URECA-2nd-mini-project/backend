@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mue.dto.*;
 import mue.entity.*;
+import mue.repository.EmotionTagRepository;
 import mue.service.*;
 
 @RestController
@@ -24,16 +25,19 @@ public class EmotionLogController {
     private final EmotionLogService emotionLogService;
     private final MusicService musicService;
     private final EmotionTagService emotionTagService;
+    private final EmotionTagRepository emotionTagRepository;
     private final HttpSession httpSession;
 
     @Autowired // 생성자 주입
     public EmotionLogController(EmotionLogService emotionLogService,
             MusicService musicService,
             EmotionTagService emotionTagService,
+            EmotionTagRepository emotionTagRepository,
             HttpSession httpSession) {
         this.emotionLogService = emotionLogService;
         this.musicService = musicService;
         this.emotionTagService = emotionTagService;
+        this.emotionTagRepository = emotionTagRepository;
         this.httpSession = httpSession;
     }
 
@@ -87,7 +91,8 @@ public class EmotionLogController {
     @GetMapping("/user")
     public ResponseEntity<ApiResponseDto> getEmotionLogsByUser() {
         String currentUserId = getUserIdFromSession(); // 세션에서 사용자 ID 가져오기
-        List<EmotionLog> emotionLogs = emotionLogService.getEmotionLogsByUser(currentUserId);
+        EmotionTag emotionTag = emotionTagRepository.findByUser_UserId(currentUserId);
+        List<EmotionLog> emotionLogs = emotionLogService.getEmotionLogsByEmotionTagId(emotionTag.getEmotionTagId());
 
         // emotionLog -> DTO 변환 (매핑과정)
         List<EmotionLogDto> emotionLogDtos = emotionLogs.stream()

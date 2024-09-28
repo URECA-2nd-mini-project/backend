@@ -27,9 +27,6 @@ public class EmotionLog {
     @JoinColumn(name = "emotion_tag_id", nullable = false)
     private EmotionTag emotionTag;
 
-    @Column(name = "music_id", nullable = false)
-    private String musicId;
-
     @Column(name = "contents", columnDefinition = "TEXT")
     private String contents;
 

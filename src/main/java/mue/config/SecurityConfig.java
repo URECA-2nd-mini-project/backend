@@ -39,7 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/api/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/login", "/api/**", "/oauth2/**", "/home").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/") // 로그아웃 성공 후 리다이렉트
