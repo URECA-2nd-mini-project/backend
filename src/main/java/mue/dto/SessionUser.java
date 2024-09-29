@@ -8,12 +8,14 @@ import java.io.Serializable;
 
 @Getter
 public class SessionUser implements Serializable {
-    private User user;
+    private String userId;
+    private String name;
     private String gmail; // email을 gmail로 수정
     private String photoUrl; // picture를 photoUrl로 수정
 
     public SessionUser(User user) {
-        this.user = user;
+        this.userId = user.getUserId();
+        this.name = user.getName();
         this.gmail = user.getGmail(); // email -> gmail
         this.photoUrl = user.getPhotoUrl(); // picture -> photoUrl
     }

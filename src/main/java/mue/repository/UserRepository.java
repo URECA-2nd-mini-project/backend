@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, String> {
     // userId로 User 엔티티 조회
     Optional<User> findByUserId(String userId);
+
+    Optional<User> findByGmail(String gmail);
 }

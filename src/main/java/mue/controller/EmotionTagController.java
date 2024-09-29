@@ -2,8 +2,10 @@ package mue.controller;
 
 import mue.dto.EmotionTagDto;
 import mue.dto.SessionUser;
-import mue.entity.EmotionTag;
+import mue.entity.*;
 import mue.service.EmotionTagService;
+import mue.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +18,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/emotionTag")
 public class EmotionTagController {
 
+  private final UserService userService;
   private final EmotionTagService emotionTagService;
   private final HttpSession httpSession;
 
   @Autowired
-  public EmotionTagController(EmotionTagService emotionTagService, HttpSession httpSession) {
+  public EmotionTagController(UserService userService, EmotionTagService emotionTagService, HttpSession httpSession) {
+    this.userService = userService;
     this.emotionTagService = emotionTagService;
     this.httpSession = httpSession;
   }
@@ -33,7 +37,7 @@ public class EmotionTagController {
     if (sessionUser == null) {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
-    String userId = sessionUser.getUser().getUserId(); // NOTE Gmail 사용? 서버에서 자체적으로 발급한 ID 사용?
+    String userId = sessionUser.getUserId();
     List<EmotionTag> emotionTags = emotionTagService.getEmotionTagsByUserId(userId);
 
     return emotionTags.stream()
@@ -50,10 +54,11 @@ public class EmotionTagController {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
 
-    EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto, sessionUser.getUser());
+    User user = userService.findById(sessionUser.getUserId());
+    EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto, user);
 
     EmotionTag savedEmotionTag = emotionTagService.createEmotionTag(emotionTag.getEmotionTag(),
-        sessionUser.getUser().getUserId());
+        sessionUser.getUserId());
     return EmotionTagDto.fromEntity(savedEmotionTag);
   }
 }

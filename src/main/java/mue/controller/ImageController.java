@@ -19,19 +19,22 @@ import mue.entity.Playlist;
 import mue.entity.User;
 import mue.service.ImageService;
 import mue.service.PlaylistService;
+import mue.service.UserService;
 import mue.dto.SessionUser; // SessionUser 임포트 추가
 
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
 
+    private final UserService userService; // HttpSession 주입
     private final ImageService imageService; // ImageService 주입
     private final PlaylistService playlistService; // PlaylistService 주입
     private final HttpSession httpSession; // HttpSession 주입
 
     @Autowired
-    public ImageController(ImageService imageService, PlaylistService playlistService, HttpSession httpSession) {
-
+    public ImageController(UserService userService, ImageService imageService, PlaylistService playlistService,
+            HttpSession httpSession) {
+        this.userService = userService;
         this.imageService = imageService;
         this.playlistService = playlistService;
         this.httpSession = httpSession; // HttpSession 초기화
@@ -42,7 +45,7 @@ public class ImageController {
         if (sessionUser == null) {
             throw new RuntimeException("사용자가 인증되지 않았습니다.");
         }
-        return sessionUser.getUser();
+        return userService.findById(sessionUser.getUserId());
     }
 
     // 이미지 업로드 메소드
