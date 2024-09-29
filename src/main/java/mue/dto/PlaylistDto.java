@@ -9,6 +9,7 @@ import mue.entity.User;
 //User entity 사용명시하기
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,18 +19,18 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 public class PlaylistDto implements Serializable {
     private String playlistId;
-    private User user; // User 엔티티의 ID만 보유
+    // private User user; // User 엔티티의 ID만 보유
     private String playlistTitle;
-    private MultipartFile userImg; // 파일로 변경
+    private MultipartFile userImg;
     private String contents;
 
     // Playlist 엔티티로 변환하는 메서드
     public Playlist toPlaylist(User user, String userImgPath) { // 파일 경로를 인자로 받음
         return Playlist.builder()
-                .playlistId(this.playlistId)
+                .playlistId(UUID.randomUUID().toString())
                 .user(user) // 전달받은 User 엔티티 설정
                 .playlistTitle(this.playlistTitle)
-                .userImg(userImgPath) // 파일 경로를 userImg에 저장
+                .userImgPath(userImgPath) // 파일 경로를 userImg에 저장
                 .contents(this.contents)
                 .build();
     }
