@@ -36,7 +36,9 @@ public class OAuthAttributes {
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
+        System.out.println("Google Attributes: " + attributes); // 디버깅을 위한 출력
         String uuid = UUID.randomUUID().toString(); // UUID를 사용하여 고유한 userId 생성
+
         return OAuthAttributes.builder()
                 .userId(uuid)
                 .name((String) attributes.get("name"))

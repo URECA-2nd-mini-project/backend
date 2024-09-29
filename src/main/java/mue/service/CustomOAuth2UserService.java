@@ -56,13 +56,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         // DB에 유저 정보가 있는지 확인, 없는 경우 추가하고 이미 존재하는 경우 정보 업데이트
+        // NOTE) 이미 회원 정보가 등록된 회원의 경우 DB에 등록하지 않도록 로직 수정 필요 (gmail 주소로 비교)
         private User saveOrUpdate(OAuthAttributes attributes) {
-                User user = userRepository.findByUserId(attributes.getUserId()) // findByEmail을 findByGmail로 변경
-                                .map(entity -> entity.update(attributes.getName(), attributes.getName(),
-                                                attributes.getPicture()))
-                                .orElse(attributes.toEntity());
+                User user = userRepository.findByGmail(attributes.getEmail())
+                                .orElse(null);
 
-                return userRepository.save(user);
+                if (user != null) {
+                        // 기존 사용자 정보 업데이트
+                        user.update(attributes.getName(), attributes.getEmail(), attributes.getPicture());
+                        return userRepository.save(user);
+                } else {
+                        // 새로운 사용자 생성
+                        return userRepository.save(attributes.toEntity());
+                }
         }
 
 }
