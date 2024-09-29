@@ -52,7 +52,7 @@ public class PlaylistService {
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
 
         // 이미지 경로가 존재하면 이미지 삭제 로직 추가 (추가할 경우)
-        if (playlist.getUserImg() != null) {
+        if (playlist.getUserImgPath() != null) {
             // 이미지 삭제 로직
             // imageService.deleteImage(playlist.getCover());
         }

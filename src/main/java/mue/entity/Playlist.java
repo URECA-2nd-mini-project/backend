@@ -21,7 +21,7 @@ public class Playlist {
     private String playlistTitle;
 
     @Column(name = "user_img")
-    private String userImg; // URL로 저장 (필드명에서 _를 제거)
+    private String userImgPath; // URL로 저장 (필드명에서 _를 제거)
 
     @Column(name = "contents", columnDefinition = "TEXT")
     private String contents;

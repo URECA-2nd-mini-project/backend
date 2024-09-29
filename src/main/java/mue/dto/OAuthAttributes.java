@@ -55,7 +55,7 @@ public class OAuthAttributes {
                 .name(name)
                 .gmail(email) // 'gmail'로 변경
                 .photoUrl(picture) // 'picture' 대신 'photoUrl' 사용
-                .role(Role.GUEST)
+                .role(Role.USER)
                 .build();
     }
 }
