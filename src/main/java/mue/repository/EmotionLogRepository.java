@@ -11,4 +11,7 @@ public interface EmotionLogRepository extends JpaRepository<EmotionLog, String> 
 
     // 감정 태그 id에 따른 감정 로그 조회
     List<EmotionLog> findByEmotionTag_EmotionTagId(String emotionTagId);
+
+    // musicId를 기준으로 감정 로그 조회
+    List<EmotionLog> findByMusic_MusicId(String musicId);
 }

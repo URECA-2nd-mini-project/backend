@@ -30,7 +30,7 @@ public class Music {
 
   // Playlist 엔티티와 다대일 관계 설정
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "playlist_id", nullable = false)
+  @JoinColumn(name = "playlist_id", nullable = true)
   private Playlist playlist;
 
   // EmotionLog와의 일대다 관계 설정
