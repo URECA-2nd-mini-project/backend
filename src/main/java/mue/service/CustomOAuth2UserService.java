@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -33,24 +34,36 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         @Override
         public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+                // OAuth2UserService 위임 설정
                 OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
                 OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
+                // 로그인하는 OAuth 서비스의 id (예: google, naver 등)
                 String registrationId = userRequest.getClientRegistration().getRegistrationId();
-                String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                                .getUserInfoEndpoint()
-                                .getUserNameAttributeName();
 
+                // OAuth 서비스에서 유저의 고유한 id를 받아오기 위한 attribute 명
+                String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+                                .getUserInfoEndpoint().getUserNameAttributeName();
+
+                // OAuthAttributes 객체에 OAuth 서비스에서 받아온 유저 정보를 담기
                 OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
                                 oAuth2User.getAttributes());
 
-                User user = saveOrUpdate(attributes);
+                // User 테이블에 이미 존재하는 유저인지 확인
+                Optional<User> userOptional = userRepository.findByGmail(attributes.getEmail());
 
-                httpSession.setAttribute("user", new SessionUser(user));
+                if (userOptional.isPresent()) {
+                        // 기존 유저인 경우 세션에 저장
+                        User user = userOptional.get();
+                        httpSession.setAttribute("user", new SessionUser(user)); // 세션에 기존 유저 정보 저장
+                } else {
+                        // 새로운 유저인 경우 세션에 newUser로 저장
+                        httpSession.setAttribute("newUser", attributes); // 세션에 새 유저 정보 저장
+                }
 
+                // 최종 OAuth2User 객체 반환
                 return new DefaultOAuth2User(
-                                Collections.singleton(new SimpleGrantedAuthority(
-                                                user.getRole().getKey())),
+                                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                                 attributes.getAttributes(),
                                 attributes.getNameAttributeKey());
         }

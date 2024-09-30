@@ -25,8 +25,8 @@ import jakarta.servlet.http.HttpSession;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final UserRepository userRepository; // 의존성 주입
-    private final HttpSession httpSession; // 의존성 주입
+    private final UserRepository userRepository;
+    private final HttpSession httpSession;
 
     @Autowired
     public SecurityConfig(UserRepository userRepository, HttpSession httpSession,
@@ -38,19 +38,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // CSRF 비활성화
+                .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/**", "/login", "/api/**", "/oauth2/**", "/home").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/") // 로그아웃 성공 후 리다이렉트
-                )
+                        .logoutSuccessUrl("/"))
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("http://localhost:5173/EmotionBoard") // 로그인 성공 후 리다이렉트할 프론트엔드 URL
-                        .failureUrl("/") // 로그인 실패 시 리다이렉트할 URL
+                        .successHandler((request, response, authentication) -> {
+                            HttpSession session = request.getSession();
+                            if (session.getAttribute("newUser") != null) {
+                                response.sendRedirect("http://localhost:5173/EmotionBoard");
+                            } else {
+                                response.sendRedirect("http://localhost:5173");
+                            }
+                        })
+                        .failureUrl("/")
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserServiceBean()) // OAuth2 사용자 정보를 처리
-                        ));
+                                .userService(customOAuth2UserServiceBean())));
 
         return http.build();
     }
@@ -59,17 +64,16 @@ public class SecurityConfig {
         return new CustomOAuth2UserService(userRepository, httpSession);
     }
 
-    // CORS 설정
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // React Vite 주소 접근 허용
+                        .allowedOrigins("http://localhost:5173")
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // 세션 쿠키를 주고받기 위해 Credential 허용
+                        .allowCredentials(true);
             }
         };
     }

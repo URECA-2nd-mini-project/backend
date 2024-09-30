@@ -21,7 +21,7 @@ public class User {
     @Column(name = "gmail", nullable = false)
     private String gmail;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "photo_url")
