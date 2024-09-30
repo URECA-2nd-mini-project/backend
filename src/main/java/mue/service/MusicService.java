@@ -32,9 +32,7 @@ public class MusicService {
     }
 
     // 2. 특정 유저의 특정 플레이리스트에 곡 추가
-    public Music addMusicToUserPlaylist(String musicId, String userId, String playlistId, String title, String artist,
-            int duration,
-            String thumbnail, String lyrics) {
+    public Music addMusicToUserPlaylist(String musicId, String userId, String playlistId, String title, String artist) {
         // 해당 플레이리스트가 특정 유저의 것인지 확인
         Optional<Playlist> playlist = playlistRepository.findById(playlistId);
 
@@ -50,9 +48,6 @@ public class MusicService {
                     musicId, // 음악 ID
                     title, // 음악 제목
                     artist, // 아티스트 이름
-                    duration, // 재생 시간
-                    thumbnail, // 썸네일 URL
-                    lyrics, // 가사
                     currentPlayedAt, // playedAt은 현재 시간으로 설정
                     playlist.get(), // 플레이리스트 객체 전달 (Optional로 감싸져 있다면 get()으로 추출)
                     emptyEmotionLogs // 초기에는 빈 감정 로그 리스트 전달
@@ -72,16 +67,13 @@ public class MusicService {
 
     // 4. 특정 유저의 특정 감정을 기록한 음악 정보 등록
     public Music createMusicWithEmotion(
-            String musicId, String title, String artist, int duration, String thumbnail, String lyrics) {
+            String musicId, String title, String artist) {
 
         // Music 엔티티 생성
         Music music = Music.builder()
                 .musicId(musicId) // 음악 ID
                 .title(title) // 음악 제목
                 .artist(artist) // 아티스트 이름
-                .duration(duration) // 재생 시간
-                .thumbnail(thumbnail) // 썸네일 URL
-                .lyrics(lyrics) // 가사
                 .playedAt(new Date()) // 재생된 시간 (생성 시간)
                 .playlist(null) // 플레이리스트와 연결하는 것이 아니므로 null 처리
                 .emotionLogs(List.of()) // 초기 감정 로그 리스트는 비어 있음

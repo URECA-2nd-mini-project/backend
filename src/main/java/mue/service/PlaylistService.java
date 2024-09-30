@@ -45,19 +45,25 @@ public class PlaylistService {
         return playlistRepository.save(existingPlaylist); // 수정된 플레이리스트 저장
     }
 
-    // 플레이리스트 삭제
-    public ResponseEntity<Void> deletePlaylist(String playlistId) {
-        // 플레이리스트를 찾아서 없으면 예외 처리
-        Playlist playlist = playlistRepository.findByPlaylistId(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
-
-        // 이미지 경로가 존재하면 이미지 삭제 로직 추가 (추가할 경우)
-        if (playlist.getUserImgPath() != null) {
-            // 이미지 삭제 로직
-            // imageService.deleteImage(playlist.getCover());
+    // 여러 개의 플레이리스트 삭제
+    public void deletePlaylists(List<String> playlistIds) {
+        if (playlistIds == null || playlistIds.isEmpty()) {
+            throw new IllegalArgumentException("삭제할 플레이리스트 ID가 없습니다.");
         }
 
-        playlistRepository.delete(playlist); // 플레이리스트 삭제
-        return ResponseEntity.noContent().build(); // HTTP 204 No Content 반환
+        for (String playlistId : playlistIds) {
+            // 개별 플레이리스트 삭제 처리
+            deletePlaylist(playlistId);
+        }
+    }
+
+    // 기존의 개별 플레이리스트 삭제 메소드
+    public void deletePlaylist(String playlistId) {
+        // 플레이리스트가 존재하는지 확인
+        if (!playlistRepository.existsById(playlistId)) {
+            throw new IllegalArgumentException("해당 플레이리스트가 존재하지 않습니다: " + playlistId);
+        }
+        // 플레이리스트 삭제
+        playlistRepository.deleteById(playlistId);
     }
 }

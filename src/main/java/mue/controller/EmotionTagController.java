@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/emotionTag")
+@RequestMapping("/emotionTag")
 public class EmotionTagController {
 
   private final UserService userService;

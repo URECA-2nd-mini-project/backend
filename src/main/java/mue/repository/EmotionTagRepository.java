@@ -2,6 +2,8 @@ package mue.repository;
 
 import mue.entity.*;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +15,7 @@ public interface EmotionTagRepository extends JpaRepository<EmotionTag, String> 
   List<EmotionTag> findAllByUserId(@Param("userId") String userId);
 
   EmotionTag findByUser_UserId(@Param("userId") String userId);
+
+  // EmotionTagId로 감정 태그 조회
+  EmotionTag findByEmotionTagId(String emotionTagId);
 }
