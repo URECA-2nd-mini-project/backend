@@ -24,15 +24,6 @@ public class Music {
   @Column(name = "artist", nullable = false)
   private String artist;
 
-  @Column(name = "duration", nullable = false)
-  private int duration;
-
-  @Column(name = "thumbnail")
-  private String thumbnail;
-
-  @Column(name = "lyrics", columnDefinition = "TEXT")
-  private String lyrics;
-
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "played_at")
   private Date playedAt;

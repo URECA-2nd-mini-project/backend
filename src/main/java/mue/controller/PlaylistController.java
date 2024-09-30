@@ -49,7 +49,6 @@ public class PlaylistController {
     public ResponseEntity<PlaylistDto> createPlaylist(@RequestBody PlaylistDto playlistDto) {
         // 세션에서 현재 유저의 정보를 가져옴
         SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
-        System.out.println(sessionUser.getUserId());
 
         // 세션에서 가져온 유저 정보를 통해 User 객체 조회
         User user = userService.findById(sessionUser.getUserId());
@@ -131,9 +130,10 @@ public class PlaylistController {
         return new ResponseEntity<>(existingPlaylist, HttpStatus.OK);
     }
 
-    // // 플레이리스트 삭제
-    // @DeleteMapping("/{playlistId}")
-    // public ResponseEntity<Void> deletePlaylist(@PathVariable String playlistId) {
-    // return playlistService.deletePlaylist(playlistId);
-    // }
+    // 5. 플레이리스트 삭제
+    @DeleteMapping
+    public ResponseEntity<Void> deletePlaylists(@RequestBody List<String> playlistIds) {
+        playlistService.deletePlaylists(playlistIds);
+        return ResponseEntity.noContent().build(); // 삭제 후 204 No Content 응답
+    }
 }
