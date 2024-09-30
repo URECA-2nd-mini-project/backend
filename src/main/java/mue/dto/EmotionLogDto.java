@@ -16,31 +16,34 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class EmotionLogDto {
-    private String emotionLogId; // 감정 로그 ID
-    private Music music; // 음악 정보
-    private EmotionTag emotionTag; // 감정 태그 정보
-    private String contents; // 로그 내용
-    private Date createdAt; // 생성일시
+    // POST 요청 시 필요한 필드
+    private PlayHistoryDto music;
+    private String emotionTagId;
+    private String contents;
 
-    // DTO -> Entity 변환 메서드 (toEntity)
-    public static EmotionLog toEntity(EmotionLogDto dto) {
+    // GET 요청 시 필요한 필드
+    private String emotionLogId;
+    private String emotionTag;
+    private Date createdAt;
+
+    // POST 요청 시 사용 (Music과 EmotionTag를 받아서 EmotionLog 엔티티로 변환)
+    public static EmotionLog toEntity(EmotionLogDto dto, Music music, EmotionTag emotionTag) {
         return EmotionLog.builder()
                 .emotionLogId(UUID.randomUUID().toString())
-                .music(dto.getMusic())
-                .emotionTag(dto.getEmotionTag())
+                .music(music)
+                .emotionTag(emotionTag)
                 .contents(dto.getContents())
-                .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : new Date()) // 생성일시 설정
+                .createdAt(new Date())
                 .build();
-    };
+    }
 
-    // Entity -> DTO 변환 메서드 (fromEntity)
-    public static EmotionLogDto fromEntity(EmotionLog entity) {
+    // GET 요청 시 사용 (EmotionLog 엔티티에서 DTO로 변환)
+    public static EmotionLogDto fromEntity(EmotionLog emotionLog) {
         return EmotionLogDto.builder()
-                .emotionLogId(entity.getEmotionLogId())
-                .music(entity.getMusic())
-                .emotionTag(entity.getEmotionTag())
-                .contents(entity.getContents())
-                .createdAt(entity.getCreatedAt())
+                .emotionLogId(emotionLog.getEmotionLogId())
+                .emotionTag(emotionLog.getEmotionTag().getEmotionTag())
+                .contents(emotionLog.getContents())
+                .createdAt(emotionLog.getCreatedAt())
                 .build();
     }
 }
