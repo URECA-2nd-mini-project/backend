@@ -1,13 +1,13 @@
 package mue.dto;
 
 import mue.entity.*;
+import mue.dto.*;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mue.entity.EmotionTag;
 
 @Getter
 @Setter
@@ -17,11 +17,23 @@ import mue.entity.EmotionTag;
 public class EmotionTagDto {
   private String emotionTag;
   private String emotionTagId;
+  private List<PlayHistoryDto> music;
 
+  // EmotionTag를 DTO로 변환 (music 없이)
   public static EmotionTagDto fromEntity(EmotionTag emotionTag) {
     return EmotionTagDto.builder()
         .emotionTag(emotionTag.getEmotionTag())
         .emotionTagId(emotionTag.getEmotionTagId())
+        .music(Collections.emptyList()) // music 리스트는 빈 값으로 설정
+        .build();
+  }
+
+  // EmotionTag를 DTO로 변환 (music 포함)
+  public static EmotionTagDto fromEntity(EmotionTag emotionTag, List<PlayHistoryDto> music) {
+    return EmotionTagDto.builder()
+        .emotionTag(emotionTag.getEmotionTag())
+        .emotionTagId(emotionTag.getEmotionTagId())
+        .music(music)
         .build();
   }
 

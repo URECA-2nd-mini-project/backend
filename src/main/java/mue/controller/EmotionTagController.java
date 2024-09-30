@@ -7,6 +7,8 @@ import mue.service.EmotionTagService;
 import mue.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,27 +40,45 @@ public class EmotionTagController {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
     String userId = sessionUser.getUserId();
+
+    // 사용자 ID로 감정 태그를 조회
     List<EmotionTag> emotionTags = emotionTagService.getEmotionTagsByUserId(userId);
 
+    // EmotionTag를 EmotionTagDto로 변환하여 반환
     return emotionTags.stream()
-        .map(EmotionTagDto::fromEntity)
-        .collect(Collectors.toList());
+        .map(EmotionTagDto::fromEntity) // EmotionTag를 EmotionTagDto로 변환
+        .collect(Collectors.toList()); // List로 수집
   }
 
   // 2. 감정 태그를 등록하는 메소드
   @PostMapping
-  public EmotionTagDto createEmotionTag(@RequestBody EmotionTagDto emotionTagDto) {
-    // 세션에서 사용자 정보를 가져옴
+  public List<EmotionTagDto> createEmotionTags(@RequestBody List<EmotionTagDto> emotionTagDtos) {
     SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
     if (sessionUser == null) {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
 
     User user = userService.findById(sessionUser.getUserId());
-    EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto, user);
 
-    EmotionTag savedEmotionTag = emotionTagService.createEmotionTag(emotionTag.getEmotionTag(),
-        sessionUser.getUserId());
-    return EmotionTagDto.fromEntity(savedEmotionTag);
+    List<EmotionTagDto> savedEmotionTags = emotionTagDtos.stream()
+        .map(emotionTagDto -> {
+          EmotionTag emotionTag = EmotionTagDto.toEntity(emotionTagDto, user);
+          EmotionTag savedEmotionTag = emotionTagService.createEmotionTag(emotionTag.getEmotionTag(),
+              sessionUser.getUserId());
+          return EmotionTagDto.fromEntity(savedEmotionTag, null);
+        })
+        .collect(Collectors.toList());
+
+    return savedEmotionTags;
+  }
+
+  // 3. 감정 태그별로 감정을 기록한 음악을 조회하는 메소드
+  @GetMapping("/music")
+  public ResponseEntity<List<EmotionTagDto>> getMusicByEmotionTags() {
+    // 감정 태그별 음악 목록을 조회하는 서비스 호출
+    List<EmotionTagDto> emotionTagWithMusicList = emotionTagService.getMusicByEmotionTags();
+
+    // 조회된 데이터를 200 OK 상태로 반환
+    return new ResponseEntity<>(emotionTagWithMusicList, HttpStatus.OK);
   }
 }

@@ -66,8 +66,8 @@ public class MusicService {
     }
 
     // 3. 특정 유저의 특정 감정을 기록한 모든 음악 조회
-    public List<Music> getMusicByUserAndEmotionTag(String userId, String emotionTag) {
-        return musicRepository.findByEmotionTag(emotionTag);
+    public List<Music> getMusicByUserAndEmotionTag(String emotionTagId) {
+        return musicRepository.findByEmotionTagId(emotionTagId);
     }
 
     // 4. 특정 유저의 특정 감정을 기록한 음악 정보 등록
