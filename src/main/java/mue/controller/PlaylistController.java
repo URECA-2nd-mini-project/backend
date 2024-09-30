@@ -136,4 +136,12 @@ public class PlaylistController {
         playlistService.deletePlaylists(playlistIds);
         return ResponseEntity.noContent().build(); // 삭제 후 204 No Content 응답
     }
+
+    // // 6. 플레이리스트에 음악을 추가
+    // @PostMapping('/music')
+    // public ResponseEntity<Void> deletePlaylists(@RequestBody List<String>
+    // playlistIds) {
+    // playlistService.deletePlaylists(playlistIds);
+    // return ResponseEntity.noContent().build(); // 삭제 후 204 No Content 응답
+    // }
 }
