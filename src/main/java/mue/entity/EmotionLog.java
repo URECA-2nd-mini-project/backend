@@ -19,7 +19,7 @@ public class EmotionLog {
 
     // Music 엔티티와 다대일 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "music_id", nullable = false) // Music 테이블의 music_id를 외래키로 설정
+    @JoinColumn(name = "music_no", nullable = false) // Music 테이블의 music_no를 외래키로 설정
     private Music music;
 
     // EmotionTag 엔티티와 다대일 관계 설정

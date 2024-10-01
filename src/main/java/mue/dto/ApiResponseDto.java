@@ -11,4 +11,9 @@ public class ApiResponseDto {
     private boolean success;
     private String message;
     private Object data; // 필요에 따라 데이터 필드를 추가할 수 있음
+
+    public ApiResponseDto(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
 }

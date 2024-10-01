@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import mue.entity.Playlist;
-import mue.repository.PlaylistRepository;
+import jakarta.transaction.Transactional;
+import mue.dto.*;
+import mue.entity.*;
+import mue.repository.*;
 
 @Service
 public class PlaylistService {
@@ -65,5 +67,31 @@ public class PlaylistService {
         }
         // 플레이리스트 삭제
         playlistRepository.deleteById(playlistId);
+    }
+
+    // Music과 Playlist를 연결하여 저장하는 메소드
+    @Transactional
+    public void addMusicToPlaylists(PlayHistoryDto music) {
+        // 각 playlistId에 해당하는 Playlist에 음악을 추가함
+        for (String playlistId : music.getPlaylistIds()) {
+            Playlist playlist = playlistRepository.findById(playlistId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 ID의 플레이리스트를 찾을 수 없습니다: " + playlistId));
+
+            Music newMusic = PlayHistoryDto.toEntity(music, playlist);
+
+            // // 새로운 Music 엔티티 생성 (플레이리스트에 저장할 때마다 새로운 음악 생성)
+            // Music newMusic = Music.builder()
+            // .musicId(music.getMusicId()) // 새로운 ID 생성
+            // .title(music.getTitle())
+            // .artist(music.getArtist())
+            // .playlist(playlist) // 해당 Playlist 설정 (ManyToOne)
+            // .build();
+
+            // Playlist의 musicList에 새로운 Music 추가
+            playlist.getMusicList().add(newMusic);
+
+            // Playlist와 Music 모두 저장 (cascade로 인해 Playlist만 저장해도 Music이 저장됨)
+            playlistRepository.save(playlist);
+        }
     }
 }

@@ -1,6 +1,6 @@
 package mue.dto;
 
-import java.util.UUID;
+import java.util.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +17,11 @@ import mue.entity.*;
 
 // 프론트와 주고받을 PlayHistory 데이터 구조를 정의
 public class PlayHistoryDto {
+  private String musicNo;
   private String musicId;
   private String title;
   private String artist;
-  private Playlist playlist;
+  private List<String> playlistIds;
 
   // PlayHistory 테이블에서 프론트와 주고받을 데이터만 따로 가져와 DTO 생성
   public static PlayHistoryDto fromEntity(PlayHistory playHistory) {
@@ -31,13 +32,13 @@ public class PlayHistoryDto {
         .build();
   }
 
-  // EmotionTagDto를 EmotionTag 엔티티로 변환
-  public static Music toEntity(PlayHistoryDto dto) {
+  // PlayHistoryDto를 Music 엔티티로 변환
+  public static Music toEntity(PlayHistoryDto dto, Playlist playlist) {
     return Music.builder()
         .musicId(dto.getMusicId())
         .title(dto.getTitle())
         .artist(dto.getArtist())
-        .playlist(dto.getPlaylist())
+        .playlist(playlist)
         .build();
   }
 }

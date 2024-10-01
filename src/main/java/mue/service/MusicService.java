@@ -45,6 +45,7 @@ public class MusicService {
 
             // 새로운 음악 생성
             Music newMusic = new Music(
+                    UUID.randomUUID().toString(), // 재생 기록 고유 ID 생성
                     musicId, // 음악 ID
                     title, // 음악 제목
                     artist, // 아티스트 이름
