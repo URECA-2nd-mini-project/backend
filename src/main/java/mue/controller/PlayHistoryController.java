@@ -49,7 +49,7 @@ public class PlayHistoryController {
     if (sessionUser == null) {
       throw new IllegalStateException("로그인된 사용자가 아닙니다.");
     }
-    String userId = sessionUser.getGmail(); // NOTE Gmail 사용? 서버에서 자체적으로 발급한 ID 사용?
+    String userId = sessionUser.getGmail();
 
     PlayHistory playHistory = playHistoryService.savePlayHistory(
         userId,
